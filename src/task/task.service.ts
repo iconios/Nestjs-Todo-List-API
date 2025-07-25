@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   UsePipes,
   ValidationPipe,
@@ -14,6 +15,7 @@ import { UtilsService } from 'src/utils/utils.service';
 @Injectable()
 @UsePipes(new ValidationPipe())
 export class TaskService {
+  private readonly logger: Logger = new Logger(TaskService.name);
   constructor(
     private readonly categoriesService: CategoriesService,
     private readonly utilsService: UtilsService,
@@ -21,7 +23,7 @@ export class TaskService {
   protected tasks: Task[] = [];
 
   createTask(createTaskDto: CreateTaskDto): Task {
-    console.log('Received new task details ', createTaskDto);
+    this.logger.log('Received new task details ', createTaskDto);
     const category = this.utilsService.validateCategoryName(createTaskDto);
 
     // If the category name doesn't exist, create the category before creating new task else
@@ -34,15 +36,15 @@ export class TaskService {
         createTaskDto,
         createdCategory,
       );
-      console.log('Details of new task to push to array: ', newTask);
+      this.logger.log('Details of new task to push to array: ', newTask);
       this.tasks.push(newTask);
-      console.log('Tasks in the array ', this.tasks);
+      this.logger.log('Tasks in the array ', this.tasks);
       return newTask;
     }
 
     const newTask = this.utilsService.CreateTaskEntity(createTaskDto, category);
     this.tasks.push(newTask);
-    console.log('Tasks in the array ', this.tasks);
+    this.logger.log('Tasks in the array ', this.tasks);
     return newTask;
   }
 
